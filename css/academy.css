@@ -288,3 +288,166 @@
 .review-row__stem { color: var(--paper); font-weight: 600; margin-bottom: 0.3em; }
 .review-row__answer { font-family: "JetBrains Mono", monospace; font-size: 0.8rem; margin-bottom: 0.3em; }
 .review-row__explanation { font-size: 0.88rem; margin: 0; }
+
+/* ---------------- Session setup (mode / count / shuffle / timer) ---------------- */
+
+.setup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.setup-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.setup-panel__title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}
+
+.setup-panel__title .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--signal);
+  flex-shrink: 0;
+}
+
+.setup-panel:nth-child(even) .setup-panel__title .dot { background: var(--accent2); }
+
+.setup-label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 1.1rem 0 0.5rem;
+}
+
+/* Segmented tabs (Mode: Practice/Test, Timer: Off/Total/Per question) */
+
+.segmented {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.segmented__btn {
+  flex: 1;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--paper-dim);
+  background: var(--ink);
+  border: none;
+  border-right: 1px solid var(--line);
+  padding: 0.55rem 0.5rem;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.segmented__btn:last-child { border-right: none; }
+
+.segmented__btn:hover:not(:disabled):not(.is-active) { background: var(--panel); }
+
+.segmented__btn.is-active {
+  background: var(--signal);
+  color: #FFFFFF;
+}
+
+.segmented.is-disabled .segmented__btn { cursor: not-allowed; opacity: 0.5; }
+.segmented__btn:disabled { cursor: not-allowed; }
+
+/* Stepper (number of questions / timer minutes / timer seconds) */
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.stepper__btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+
+.stepper__btn:hover { border-color: var(--signal); }
+
+.stepper__value {
+  flex: 1;
+  text-align: center;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--paper);
+}
+
+/* Toggle rows (Shuffle questions / Shuffle options) */
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.1rem;
+}
+
+.toggle-row__label { font-weight: 600; font-size: 0.92rem; color: var(--paper); }
+.toggle-row__desc { font-size: 0.78rem; color: var(--muted); }
+
+.toggle {
+  position: relative;
+  flex-shrink: 0;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  border: none;
+  background: var(--line);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 150ms ease;
+}
+
+.toggle.is-on { background: var(--signal); }
+
+.toggle__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(36, 23, 53, 0.35);
+  transition: transform 150ms ease;
+}
+
+.toggle.is-on .toggle__knob { transform: translateX(18px); }
+
+/* Note box (shown when Timer is off / locked) */
+
+.setup-note {
+  margin-top: 0.85rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px dashed var(--line);
+  border-radius: 9px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+}

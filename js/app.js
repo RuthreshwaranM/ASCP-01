@@ -38,6 +38,33 @@
     return l.toUpperCase();
   }
 
+  function letterFor(i) {
+    return String.fromCharCode(97 + i); // 0->'a', 1->'b', ...
+  }
+
+  /* Builds the question set for a session: applies question-shuffle,
+     trims to the requested count, and (optionally) shuffles each
+     question's options — re-lettering them a/b/c/d in their new,
+     on-screen order so every letter comparison downstream still
+     just works. */
+  function prepareQuestions(chapter, opts) {
+    var list = opts.shuffleQ ? shuffle(chapter.questions) : chapter.questions.slice();
+    list = list.slice(0, opts.count);
+    return list.map(function (q) {
+      var srcOptions = opts.shuffleOpt ? shuffle(q.options) : q.options.slice();
+      return {
+        number: q.number,
+        stem: q.stem,
+        images: q.images,
+        explanation: q.explanation,
+        needsAnswerKey: q.needsAnswerKey,
+        options: srcOptions.map(function (o, i) {
+          return { letter: letterFor(i), text: o.text, correct: o.correct };
+        })
+      };
+    });
+  }
+
   function questionMedia(q) {
     if (!q.images.length) return "";
     return q.images
@@ -162,57 +189,192 @@
     });
     if (!chapter) return renderChapterList(subjectId);
 
-    var graded = chapter.questions.filter(function (q) {
-      return !q.needsAnswerKey;
+    var total = chapter.questions.length;
+    var flagged = chapter.questions.filter(function (q) {
+      return q.needsAnswerKey;
     }).length;
-    var flagged = chapter.questions.length - graded;
 
-    app.innerHTML =
-      '<div class="panel">' +
-      '<button class="link-back" data-back>&larr; ' +
-      escapeHtml(subject.label) +
-      "</button>" +
-      "<h2>" +
-      escapeHtml(chapter.label) +
-      "</h2>" +
-      "<p class=\"mode-picker__summary\">" +
-      chapter.questions.length +
-      " questions" +
-      (flagged
-        ? ", <span class=\"flag\">" + flagged + " without a marked answer</span> (shown ungraded)"
-        : "") +
-      "</p>" +
-      '<div class="mode-grid">' +
-      '<button class="mode-card" data-mode="practice">' +
-      "<span class=\"mode-card__title\">Practice</span>" +
-      '<span class="mode-card__desc">One question at a time, with the answer and explanation shown right after you pick.</span>' +
-      "</button>" +
-      '<button class="mode-card" data-mode="test">' +
-      "<span class=\"mode-card__title\">Timed test</span>" +
-      '<span class="mode-card__desc">All questions, a running clock, no feedback until you submit.</span>' +
-      "</button>" +
-      "</div>" +
-      "</div>";
+    var state = {
+      mode: "practice",
+      count: total,
+      shuffleQ: true,
+      shuffleOpt: false,
+      timerType: "off",
+      timerMinutes: Math.max(1, Math.round((total * SECONDS_PER_QUESTION) / 60)),
+      timerSeconds: SECONDS_PER_QUESTION
+    };
 
-    app.querySelector("[data-back]").addEventListener("click", function () {
-      renderChapterList(subjectId);
-    });
-    app.querySelectorAll("[data-mode]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var mode = btn.getAttribute("data-mode");
-        if (mode === "practice") {
-          runPractice(subjectId, chapter);
+    function clampCount(n) {
+      return Math.min(total, Math.max(1, n));
+    }
+
+    function render() {
+      var timerDisabled = state.mode === "practice";
+
+      var timerBody;
+      if (timerDisabled) {
+        timerBody =
+          '<div class="setup-note">In Practice mode you get instant feedback after each answer, with an explanation where available.</div>';
+      } else if (state.timerType === "total") {
+        timerBody =
+          '<label class="setup-label">Total minutes</label>' +
+          '<div class="stepper">' +
+          '<button type="button" class="stepper__btn" data-step-timer="-1">&minus;</button>' +
+          '<div class="stepper__value">' + state.timerMinutes + "</div>" +
+          '<button type="button" class="stepper__btn" data-step-timer="1">+</button>' +
+          "</div>";
+      } else if (state.timerType === "per") {
+        timerBody =
+          '<label class="setup-label">Seconds per question</label>' +
+          '<div class="stepper">' +
+          '<button type="button" class="stepper__btn" data-step-timer="-1">&minus;</button>' +
+          '<div class="stepper__value">' + state.timerSeconds + "</div>" +
+          '<button type="button" class="stepper__btn" data-step-timer="1">+</button>' +
+          "</div>";
+      } else {
+        timerBody = '<div class="setup-note">No clock — answer at your own pace and review at the end.</div>';
+      }
+
+      app.innerHTML =
+        '<div class="panel setup">' +
+        '<button class="link-back" data-back>&larr; ' +
+        escapeHtml(subject.label) +
+        "</button>" +
+        "<h2>Session setup</h2>" +
+        "<p>" +
+        total +
+        " question" +
+        (total === 1 ? "" : "s") +
+        " available in this chapter." +
+        (flagged
+          ? ' <span class="flag">' + flagged + " without a marked answer</span> will be shown ungraded."
+          : "") +
+        "</p>" +
+        '<div class="setup-grid">' +
+        '<div class="setup-panel">' +
+        '<h3 class="setup-panel__title"><span class="dot"></span>Mode</h3>' +
+        '<div class="segmented" data-segment="mode">' +
+        '<button type="button" class="segmented__btn' +
+        (state.mode === "practice" ? " is-active" : "") +
+        '" data-value="practice">Practice</button>' +
+        '<button type="button" class="segmented__btn' +
+        (state.mode === "test" ? " is-active" : "") +
+        '" data-value="test">Test</button>' +
+        "</div>" +
+        '<label class="setup-label">Number of questions</label>' +
+        '<div class="stepper">' +
+        '<button type="button" class="stepper__btn" data-step="-1">&minus;</button>' +
+        '<div class="stepper__value">' + state.count + "</div>" +
+        '<button type="button" class="stepper__btn" data-step="1">+</button>' +
+        "</div>" +
+        '<div class="toggle-row">' +
+        "<div><div class=\"toggle-row__label\">Shuffle questions</div><div class=\"toggle-row__desc\">Random order each attempt</div></div>" +
+        '<button type="button" class="toggle' +
+        (state.shuffleQ ? " is-on" : "") +
+        '" data-toggle="shuffleQ" aria-pressed="' +
+        state.shuffleQ +
+        '"><span class="toggle__knob"></span></button>' +
+        "</div>" +
+        '<div class="toggle-row">' +
+        "<div><div class=\"toggle-row__label\">Shuffle options</div><div class=\"toggle-row__desc\">Randomize A/B/C/D order</div></div>" +
+        '<button type="button" class="toggle' +
+        (state.shuffleOpt ? " is-on" : "") +
+        '" data-toggle="shuffleOpt" aria-pressed="' +
+        state.shuffleOpt +
+        '"><span class="toggle__knob"></span></button>' +
+        "</div>" +
+        "</div>" +
+        '<div class="setup-panel">' +
+        '<h3 class="setup-panel__title"><span class="dot"></span>Timer</h3>' +
+        '<div class="segmented' +
+        (timerDisabled ? " is-disabled" : "") +
+        '" data-segment="timer">' +
+        '<button type="button" class="segmented__btn' +
+        (state.timerType === "off" ? " is-active" : "") +
+        '" data-value="off"' +
+        (timerDisabled ? " disabled" : "") +
+        ">Off</button>" +
+        '<button type="button" class="segmented__btn' +
+        (state.timerType === "total" ? " is-active" : "") +
+        '" data-value="total"' +
+        (timerDisabled ? " disabled" : "") +
+        ">Total</button>" +
+        '<button type="button" class="segmented__btn' +
+        (state.timerType === "per" ? " is-active" : "") +
+        '" data-value="per"' +
+        (timerDisabled ? " disabled" : "") +
+        ">Per question</button>" +
+        "</div>" +
+        timerBody +
+        "</div>" +
+        "</div>" +
+        '<div class="quiz__controls">' +
+        '<button class="btn" data-cancel>Cancel</button>' +
+        '<button class="btn btn--primary" data-start>Start session</button>' +
+        "</div>" +
+        "</div>";
+
+      app.querySelector("[data-back]").addEventListener("click", function () {
+        renderChapterList(subjectId);
+      });
+      app.querySelector("[data-cancel]").addEventListener("click", function () {
+        renderChapterList(subjectId);
+      });
+
+      app.querySelectorAll('[data-segment="mode"] .segmented__btn').forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          state.mode = btn.getAttribute("data-value");
+          if (state.mode === "practice") state.timerType = "off";
+          render();
+        });
+      });
+      app.querySelectorAll('[data-segment="timer"] .segmented__btn').forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (timerDisabled) return;
+          state.timerType = btn.getAttribute("data-value");
+          render();
+        });
+      });
+      app.querySelectorAll("[data-step]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          state.count = clampCount(state.count + parseInt(btn.getAttribute("data-step"), 10));
+          render();
+        });
+      });
+      app.querySelectorAll("[data-step-timer]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var d = parseInt(btn.getAttribute("data-step-timer"), 10);
+          if (state.timerType === "total") {
+            state.timerMinutes = Math.max(1, state.timerMinutes + d);
+          } else if (state.timerType === "per") {
+            state.timerSeconds = Math.max(10, state.timerSeconds + d * 5);
+          }
+          render();
+        });
+      });
+      app.querySelectorAll("[data-toggle]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var key = btn.getAttribute("data-toggle");
+          state[key] = !state[key];
+          render();
+        });
+      });
+      app.querySelector("[data-start]").addEventListener("click", function () {
+        if (state.mode === "practice") {
+          runPractice(subjectId, chapter, state);
         } else {
-          runTest(subjectId, chapter);
+          runTest(subjectId, chapter, state);
         }
       });
-    });
+    }
+
+    render();
   }
 
   /* ---------------- Practice mode ---------------- */
 
-  function runPractice(subjectId, chapter) {
-    var questions = shuffle(chapter.questions);
+  function runPractice(subjectId, chapter, opts) {
+    var questions = prepareQuestions(chapter, opts);
     var index = 0;
     var correctCount = 0;
     var gradedSeen = 0;
@@ -342,9 +504,15 @@
 
   /* ---------------- Timed test mode ---------------- */
 
-  function runTest(subjectId, chapter) {
-    var questions = shuffle(chapter.questions);
-    var totalSeconds = questions.length * SECONDS_PER_QUESTION;
+  function runTest(subjectId, chapter, opts) {
+    var questions = prepareQuestions(chapter, opts);
+    var timerType = (opts && opts.timerType) || "off";
+    var totalSeconds =
+      timerType === "total"
+        ? opts.timerMinutes * 60
+        : timerType === "per"
+        ? questions.length * opts.timerSeconds
+        : 0;
     var remaining = totalSeconds;
     var index = 0;
     var picks = {}; // number -> letter
@@ -407,9 +575,10 @@
         (index + 1) +
         " of " +
         questions.length +
-        ' &middot; Time left <strong data-time>' +
-        fmtTime(remaining) +
-        "</strong></p>" +
+        (timerType === "off"
+          ? ""
+          : ' &middot; Time left <strong data-time>' + fmtTime(remaining) + "</strong>") +
+        "</p>" +
         '<div class="question">' +
         '<p class="question__stem">' +
         q.number +
@@ -477,12 +646,14 @@
       '<div class="panel">' +
       "<h2>" +
       escapeHtml(chapter.label) +
-      " &middot; Timed test</h2>" +
+      " &middot; Test</h2>" +
       "<p>" +
       questions.length +
-      " questions, " +
-      fmtTime(totalSeconds) +
-      " on the clock. The timer starts as soon as you press start.</p>" +
+      " questions" +
+      (timerType === "off"
+        ? ". No timer — work at your own pace, review at the end."
+        : ", " + fmtTime(totalSeconds) + " on the clock. The timer starts as soon as you press start.") +
+      "</p>" +
       '<div class="quiz__controls">' +
       '<button class="btn" data-back>Back</button>' +
       '<button class="btn btn--primary" data-start>Start test</button>' +
@@ -492,7 +663,7 @@
       renderModePicker(subjectId, chapter.id);
     });
     app.querySelector("[data-start]").addEventListener("click", function () {
-      startTimer();
+      if (timerType !== "off") startTimer();
       renderQuestion();
     });
   }
