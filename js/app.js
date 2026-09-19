@@ -1,463 +1,578 @@
 /* ============================================================
-   APP.JS — the question-bank UI. Reads window.QuestionBank
-   (built by parser.js + the /data files) and renders into #app.
-   State lives in the URL hash so back/forward and refresh work.
+   APP.JS
+   ------------------------------------------------------------
+   Renders the question-bank UI into <main id="app"> on
+   bank.html, using the data parser.js built from window.QuestionBank
+   (populated by data/*.js files loaded before this script).
    ============================================================ */
-(function(){
+(function () {
+  "use strict";
 
-  var SECONDS_PER_QUESTION = 60; // timed-test budget
+  var app = document.getElementById("app");
+  if (!app) return;
 
-  function el(tag, attrs, children){
-    var e = document.createElement(tag);
-    attrs = attrs || {};
-    for(var k in attrs){
-      if(k === 'class') e.className = attrs[k];
-      else if(k === 'html') e.innerHTML = attrs[k];
-      else e.setAttribute(k, attrs[k]);
+  var SECONDS_PER_QUESTION = 60; // timed-test default
+
+  function escapeHtml(str) {
+    return String(str == null ? "" : str).replace(/[&<>"']/g, function (c) {
+      return (
+        { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[
+          c
+        ] || c
+      );
+    });
+  }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i];
+      a[i] = a[j];
+      a[j] = tmp;
     }
-    (children || []).forEach(function(c){
-      if(c == null) return;
-      e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
-    });
-    return e;
+    return a;
   }
 
-  function bank(){ return window.QuestionBank || { subjects: [] }; }
-
-  /* ---------------- routing ---------------- */
-  function parseHash(){
-    var raw = location.hash.replace(/^#/, '');
-    var params = new URLSearchParams(raw);
-    return {
-      subject: params.get('subject'),
-      chapter: params.get('chapter'),
-      mode: params.get('mode')
-    };
-  }
-  function goTo(state){
-    var params = new URLSearchParams();
-    if(state.subject) params.set('subject', state.subject);
-    if(state.chapter) params.set('chapter', state.chapter);
-    if(state.mode) params.set('mode', state.mode);
-    var qs = params.toString();
-    location.hash = qs ? '#' + qs : '#';
+  function letterUp(l) {
+    return l.toUpperCase();
   }
 
-  /* ---------------- breadcrumbs ---------------- */
-  function renderBreadcrumb(steps){
-    var host = document.getElementById('breadcrumbs');
-    if(!host) return;
-    host.innerHTML = '';
-    steps.forEach(function(step, i){
-      if(i > 0) host.appendChild(el('span', {class:'crumb-sep'}, ['/']));
-      if(step.state){
-        var a = el('a', {href:'#'}, [step.label]);
-        a.addEventListener('click', function(ev){ ev.preventDefault(); goTo(step.state); });
-        host.appendChild(a);
-      } else {
-        host.appendChild(el('span', {class:'crumb-current'}, [step.label]));
-      }
-    });
+  function questionMedia(q) {
+    if (!q.images.length) return "";
+    return q.images
+      .map(function (file) {
+        return (
+          '<img class="question__image" src="images/' +
+          escapeHtml(file) +
+          '" alt="Diagram for question ' +
+          q.number +
+          '">'
+        );
+      })
+      .join("");
   }
 
-  /* ---------------- pickers ---------------- */
-  function renderSubjectList(app){
-    app.innerHTML = '';
-    app.appendChild(el('h1', {class:'bank-heading'}, ['Question Bank']));
-    var subjects = bank().subjects;
-    if(!subjects.length){
-      app.appendChild(el('div', {class:'empty-state'}, [
-        'No question files are loaded yet. Add one under /data and list it with a <script> tag in bank.html.'
-      ]));
-      renderBreadcrumb([{label:'Question Bank'}]);
+  /* ---------------- Top-level navigation ---------------- */
+
+  function renderSubjectList() {
+    var bank = window.QuestionBank || { subjects: {}, order: [] };
+    var subjectIds = bank.order || Object.keys(bank.subjects);
+
+    if (!subjectIds.length) {
+      app.innerHTML =
+        '<div class="panel empty-state">' +
+        "<h2>No subjects yet</h2>" +
+        "<p>Add a subject in a <code>data/*.js</code> file and list it in <code>bank.html</code>. See README.md.</p>" +
+        "</div>";
       return;
     }
-    app.appendChild(el('p', {class:'bank-subheading'}, ['Pick a subject to start practicing.']));
-    var grid = el('div', {class:'grid'});
-    subjects.forEach(function(s){
-      var qCount = s.chapters.reduce(function(n,c){ return n + c.questions.length; }, 0);
-      var card = el('button', {class:'pick-card', type:'button'}, [
-        el('h3', null, [s.label]),
-        el('p', null, [s.chapters.length + ' chapter' + (s.chapters.length===1?'':'s')]),
-        el('span', {class:'meta'}, [qCount + ' questions'])
-      ]);
-      card.addEventListener('click', function(){ goTo({subject:s.id}); });
-      grid.appendChild(card);
+
+    var cardsHtml = subjectIds
+      .map(function (id) {
+        var subject = bank.subjects[id];
+        var totalQuestions = subject.chapters.reduce(function (sum, ch) {
+          return sum + ch.questions.length;
+        }, 0);
+        return (
+          '<button class="subject-card" data-subject="' +
+          escapeHtml(id) +
+          '">' +
+          '<span class="subject-card__label">' +
+          escapeHtml(subject.label) +
+          "</span>" +
+          '<span class="subject-card__meta">' +
+          subject.chapters.length +
+          " chapter" +
+          (subject.chapters.length === 1 ? "" : "s") +
+          " &middot; " +
+          totalQuestions +
+          " questions</span>" +
+          "</button>"
+        );
+      })
+      .join("");
+
+    app.innerHTML =
+      '<div class="panel">' +
+      "<h2>Choose a subject</h2>" +
+      '<div class="subject-grid">' +
+      cardsHtml +
+      "</div>" +
+      "</div>";
+
+    app.querySelectorAll("[data-subject]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        renderChapterList(btn.getAttribute("data-subject"));
+      });
     });
-    app.appendChild(grid);
-    renderBreadcrumb([{label:'Question Bank'}]);
   }
 
-  function renderChapterList(app, subject){
-    app.innerHTML = '';
-    app.appendChild(el('h1', {class:'bank-heading'}, [subject.label]));
-    app.appendChild(el('p', {class:'bank-subheading'}, ['Pick a chapter.']));
-    var grid = el('div', {class:'grid'});
-    subject.chapters.forEach(function(c){
-      var card = el('button', {class:'pick-card', type:'button'}, [
-        el('h3', null, [c.label]),
-        el('span', {class:'meta'}, [c.questions.length + ' questions'])
-      ]);
-      card.addEventListener('click', function(){ goTo({subject:subject.id, chapter:c.id}); });
-      grid.appendChild(card);
+  function renderChapterList(subjectId) {
+    var subject = window.QuestionBank.subjects[subjectId];
+    if (!subject) return renderSubjectList();
+
+    var rowsHtml = subject.chapters
+      .map(function (ch) {
+        var flagged = ch.questions.filter(function (q) {
+          return q.needsAnswerKey;
+        }).length;
+        return (
+          '<button class="chapter-row" data-chapter="' +
+          escapeHtml(ch.id) +
+          '">' +
+          '<span class="chapter-row__label">' +
+          escapeHtml(ch.label) +
+          "</span>" +
+          '<span class="chapter-row__meta">' +
+          ch.questions.length +
+          " questions" +
+          (flagged
+            ? ' &middot; <span class="flag">' + flagged + " need an answer key</span>"
+            : "") +
+          "</span>" +
+          "</button>"
+        );
+      })
+      .join("");
+
+    app.innerHTML =
+      '<div class="panel">' +
+      '<button class="link-back" data-back>&larr; Subjects</button>' +
+      "<h2>" +
+      escapeHtml(subject.label) +
+      "</h2>" +
+      '<div class="chapter-list">' +
+      rowsHtml +
+      "</div>" +
+      "</div>";
+
+    app.querySelector("[data-back]").addEventListener("click", renderSubjectList);
+    app.querySelectorAll("[data-chapter]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        renderModePicker(subjectId, btn.getAttribute("data-chapter"));
+      });
     });
-    app.appendChild(grid);
-    renderBreadcrumb([
-      {label:'Question Bank', state:{}},
-      {label:subject.label}
-    ]);
   }
 
-  function renderModeSelect(app, subject, chapter){
-    app.innerHTML = '';
-    app.appendChild(el('h1', {class:'bank-heading'}, [chapter.label]));
-    app.appendChild(el('p', {class:'bank-subheading'}, [
-      chapter.questions.length + ' questions. Choose how you want to run them.'
-    ]));
-    var grid = el('div', {class:'grid mode-grid'});
-
-    var practice = el('button', {class:'pick-card mode-card', type:'button'}, [
-      el('div', {class:'mode-title'}, ['Practice Mode', el('span', {class:'mode-badge'}, ['self-paced'])]),
-      el('p', null, ['One question at a time, with the answer and explanation shown right after you pick.'])
-    ]);
-    practice.addEventListener('click', function(){ goTo({subject:subject.id, chapter:chapter.id, mode:'practice'}); });
-
-    var test = el('button', {class:'pick-card mode-card', type:'button'}, [
-      el('div', {class:'mode-title'}, ['Timed Test', el('span', {class:'mode-badge'}, ['exam sim'])]),
-      el('p', null, ['All questions on one page, a countdown timer, and a score at the end.'])
-    ]);
-    test.addEventListener('click', function(){ goTo({subject:subject.id, chapter:chapter.id, mode:'test'}); });
-
-    grid.appendChild(practice);
-    grid.appendChild(test);
-    app.appendChild(grid);
-
-    renderBreadcrumb([
-      {label:'Question Bank', state:{}},
-      {label:subject.label, state:{subject:subject.id}},
-      {label:chapter.label}
-    ]);
-  }
-
-  /* ---------------- shared option rendering ---------------- */
-  function optionsList(question, onPick, disabled, revealed){
-    var list = el('ul', {class:'q-options'});
-    question.options.forEach(function(opt){
-      var classes = ['q-option'];
-      if(revealed){
-        if(opt.letter === question.correct) classes.push('is-correct');
-        else if(revealed.picked === opt.letter) classes.push('is-wrong');
-      } else if(revealed === undefined && disabled === false){
-        // not answered yet, nothing to highlight
-      }
-      var btn = el('button', {
-        class: classes.join(' '),
-        type: 'button'
-      }, [
-        el('span', {class:'opt-letter'}, [opt.letter.toUpperCase()]),
-        el('span', null, [opt.text])
-      ]);
-      if(disabled) btn.disabled = true;
-      btn.addEventListener('click', function(){ onPick(opt.letter); });
-      list.appendChild(btn);
+  function renderModePicker(subjectId, chapterId) {
+    var subject = window.QuestionBank.subjects[subjectId];
+    var chapter = subject.chapters.find(function (c) {
+      return c.id === chapterId;
     });
-    return list;
-  }
+    if (!chapter) return renderChapterList(subjectId);
 
-  function questionCard(question, index, extra){
-    var card = el('div', {class:'q-card'});
-    card.appendChild(el('span', {class:'q-number'}, ['Question ' + (index+1)]));
-    card.appendChild(el('p', {class:'q-text'}, [question.text]));
-    if(question.image){
-      card.appendChild(el('img', {class:'q-image', src:'images/' + question.image, alt:''}));
-    }
-    return card;
-  }
+    var graded = chapter.questions.filter(function (q) {
+      return !q.needsAnswerKey;
+    }).length;
+    var flagged = chapter.questions.length - graded;
 
-  /* ---------------- practice mode ---------------- */
-  function renderPractice(app, subject, chapter){
-    var questions = chapter.questions;
-    var idx = 0;
-    var score = 0;
-    var answeredCount = 0;
+    app.innerHTML =
+      '<div class="panel">' +
+      '<button class="link-back" data-back>&larr; ' +
+      escapeHtml(subject.label) +
+      "</button>" +
+      "<h2>" +
+      escapeHtml(chapter.label) +
+      "</h2>" +
+      "<p class=\"mode-picker__summary\">" +
+      chapter.questions.length +
+      " questions" +
+      (flagged
+        ? ", <span class=\"flag\">" + flagged + " without a marked answer</span> (shown ungraded)"
+        : "") +
+      "</p>" +
+      '<div class="mode-grid">' +
+      '<button class="mode-card" data-mode="practice">' +
+      "<span class=\"mode-card__title\">Practice</span>" +
+      '<span class="mode-card__desc">One question at a time, with the answer and explanation shown right after you pick.</span>' +
+      "</button>" +
+      '<button class="mode-card" data-mode="test">' +
+      "<span class=\"mode-card__title\">Timed test</span>" +
+      '<span class="mode-card__desc">All questions, a running clock, no feedback until you submit.</span>' +
+      "</button>" +
+      "</div>" +
+      "</div>";
 
-    function draw(){
-      app.innerHTML = '';
-      var q = questions[idx];
-
-      var topbar = el('div', {class:'quiz-topbar'});
-      var track = el('div', {class:'progress-track'});
-      track.appendChild(el('div', {class:'progress-fill', style:'width:' + Math.round(((idx)/questions.length)*100) + '%'}));
-      topbar.appendChild(track);
-      topbar.appendChild(el('span', {class:'progress-label'}, [(idx+1) + ' / ' + questions.length]));
-      app.appendChild(topbar);
-
-      var card = questionCard(q, idx);
-      var picked = null;
-      var feedbackHost = el('div');
-
-      var list = optionsList(q, function(letter){
-        if(picked) return;
-        picked = letter;
-        answeredCount++;
-        var isCorrect = q.correct && letter === q.correct;
-        if(isCorrect) score++;
-
-        Array.prototype.forEach.call(list.children, function(btn, i){
-          btn.disabled = true;
-          var optLetter = q.options[i].letter;
-          if(q.correct){
-            if(optLetter === q.correct) btn.classList.add('is-correct');
-            else if(optLetter === letter) btn.classList.add('is-wrong');
-          } else if(optLetter === letter){
-            btn.classList.add('is-selected');
-          }
-        });
-
-        feedbackHost.innerHTML = '';
-        if(!q.correct){
-          feedbackHost.appendChild(el('div', {class:'q-feedback no-key'}, [
-            'No answer key set for this question yet.'
-          ]));
+    app.querySelector("[data-back]").addEventListener("click", function () {
+      renderChapterList(subjectId);
+    });
+    app.querySelectorAll("[data-mode]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var mode = btn.getAttribute("data-mode");
+        if (mode === "practice") {
+          runPractice(subjectId, chapter);
         } else {
-          var fb = el('div', {class:'q-feedback ' + (isCorrect ? 'is-correct' : 'is-wrong')}, [
-            isCorrect ? 'Correct.' : 'Not quite — the correct answer is ' + q.correct.toUpperCase() + '.'
-          ]);
-          if(q.explanation){
-            fb.appendChild(el('p', {class:'q-explain'}, [q.explanation]));
-          }
-          feedbackHost.appendChild(fb);
+          runTest(subjectId, chapter);
         }
-        nextBtn.disabled = false;
-      }, false);
+      });
+    });
+  }
 
-      card.appendChild(list);
-      card.appendChild(feedbackHost);
-      app.appendChild(card);
+  /* ---------------- Practice mode ---------------- */
 
-      var controls = el('div', {class:'quiz-controls'});
-      var exitBtn = el('button', {class:'btn btn-ghost', type:'button'}, ['Exit']);
-      exitBtn.addEventListener('click', function(){ goTo({subject:subject.id, chapter:chapter.id}); });
+  function runPractice(subjectId, chapter) {
+    var questions = shuffle(chapter.questions);
+    var index = 0;
+    var correctCount = 0;
+    var gradedSeen = 0;
+    var answered = null; // selected letter for current question
 
-      var nextBtn = el('button', {class:'btn btn-primary', type:'button'}, [idx+1 === questions.length ? 'Finish' : 'Next']);
-      nextBtn.disabled = true;
-      nextBtn.addEventListener('click', function(){
-        if(idx + 1 < questions.length){ idx++; draw(); }
-        else { drawResults(); }
+    function renderQuestion() {
+      var q = questions[index];
+      answered = null;
+      var progressPct = Math.round((index / questions.length) * 100);
+
+      var optionsHtml = q.options
+        .map(function (opt) {
+          return (
+            '<button class="option" data-letter="' +
+            opt.letter +
+            '">' +
+            '<span class="option__letter">' +
+            letterUp(opt.letter) +
+            "</span>" +
+            '<span class="option__text">' +
+            escapeHtml(opt.text) +
+            "</span>" +
+            "</button>"
+          );
+        })
+        .join("");
+
+      app.innerHTML =
+        '<div class="panel quiz">' +
+        '<button class="link-back" data-quit>&larr; Exit practice</button>' +
+        '<div class="progress"><div class="progress__bar" style="width:' +
+        progressPct +
+        '%"></div></div>' +
+        '<p class="quiz__meta">Question ' +
+        (index + 1) +
+        " of " +
+        questions.length +
+        ' &middot; Score ' +
+        correctCount +
+        "/" +
+        gradedSeen +
+        "</p>" +
+        '<div class="question">' +
+        '<p class="question__stem">' +
+        q.number +
+        ". " +
+        escapeHtml(q.stem) +
+        "</p>" +
+        questionMedia(q) +
+        '<div class="options">' +
+        optionsHtml +
+        "</div>" +
+        '<div class="feedback" data-feedback hidden></div>' +
+        "</div>" +
+        '<div class="quiz__controls">' +
+        '<button class="btn btn--primary" data-next disabled>' +
+        (index === questions.length - 1 ? "Finish" : "Next question") +
+        "</button>" +
+        "</div>" +
+        "</div>";
+
+      app.querySelector("[data-quit]").addEventListener("click", function () {
+        renderModePicker(subjectId, chapter.id);
       });
 
-      controls.appendChild(exitBtn);
-      controls.appendChild(nextBtn);
-      app.appendChild(controls);
+      var nextBtn = app.querySelector("[data-next]");
+      nextBtn.addEventListener("click", function () {
+        if (index < questions.length - 1) {
+          index++;
+          renderQuestion();
+        } else {
+          renderResults(subjectId, chapter, correctCount, gradedSeen, "practice");
+        }
+      });
 
-      renderBreadcrumb([
-        {label:'Question Bank', state:{}},
-        {label:subject.label, state:{subject:subject.id}},
-        {label:chapter.label, state:{subject:subject.id, chapter:chapter.id}},
-        {label:'Practice'}
-      ]);
+      app.querySelectorAll(".option").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          if (answered) return; // already answered this question
+          answered = btn.getAttribute("data-letter");
+          revealAnswer(q, answered);
+          nextBtn.removeAttribute("disabled");
+        });
+      });
     }
 
-    function drawResults(){
-      app.innerHTML = '';
-      var keyed = questions.filter(function(q){ return q.correct; }).length;
-      var res = el('div', {class:'results'});
-      res.appendChild(el('div', {class:'results-score'}, [score + ' / ' + (keyed || questions.length)]));
-      res.appendChild(el('p', {class:'results-sub'}, ['Questions answered correctly, out of those with an answer key set.']));
-      if(keyed < questions.length){
-        res.appendChild(el('div', {class:'results-note'}, [
-          (questions.length - keyed) + ' question(s) in this chapter have no answer marked yet, so they weren\u2019t scored.'
-        ]));
+    function revealAnswer(q, chosenLetter) {
+      var feedback = app.querySelector("[data-feedback]");
+      var hasKey = !q.needsAnswerKey;
+      var correctOpt = q.options.find(function (o) {
+        return o.correct;
+      });
+
+      app.querySelectorAll(".option").forEach(function (btn) {
+        var letter = btn.getAttribute("data-letter");
+        btn.disabled = true;
+        if (hasKey && correctOpt && letter === correctOpt.letter) {
+          btn.classList.add("is-correct");
+        }
+        if (letter === chosenLetter && (!hasKey || letter !== correctOpt.letter)) {
+          btn.classList.add("is-chosen");
+        }
+      });
+
+      if (!hasKey) {
+        feedback.innerHTML =
+          '<p class="feedback__flag">This question has no answer marked with * in the data file yet, ' +
+          "so it isn't scored. Open data/pa28-archer.js, add a * before the correct letter, refresh.</p>";
+      } else {
+        var isRight = chosenLetter === correctOpt.letter;
+        gradedSeen++;
+        if (isRight) correctCount++;
+        feedback.innerHTML =
+          '<p class="feedback__verdict ' +
+          (isRight ? "is-right" : "is-wrong") +
+          '">' +
+          (isRight ? "Correct." : "Not quite — correct answer is " + letterUp(correctOpt.letter) + ".") +
+          "</p>" +
+          (q.explanation
+            ? '<p class="feedback__explanation">' + escapeHtml(q.explanation) + "</p>"
+            : "");
       }
-      var again = el('button', {class:'btn btn-primary', type:'button'}, ['Practice again']);
-      again.addEventListener('click', function(){ idx = 0; score = 0; answeredCount = 0; draw(); });
-      var back = el('button', {class:'btn btn-ghost', type:'button'}, ['Back to chapter']);
-      back.addEventListener('click', function(){ goTo({subject:subject.id, chapter:chapter.id}); });
-      var controls = el('div', {class:'quiz-controls'});
-      controls.appendChild(back);
-      controls.appendChild(again);
-      res.appendChild(controls);
-      app.appendChild(res);
-
-      renderBreadcrumb([
-        {label:'Question Bank', state:{}},
-        {label:subject.label, state:{subject:subject.id}},
-        {label:chapter.label, state:{subject:subject.id, chapter:chapter.id}},
-        {label:'Results'}
-      ]);
+      feedback.removeAttribute("hidden");
     }
 
-    draw();
+    renderQuestion();
   }
 
-  /* ---------------- timed test mode ---------------- */
-  function renderTest(app, subject, chapter){
-    var questions = chapter.questions;
-    var answers = {}; // index -> letter
+  /* ---------------- Timed test mode ---------------- */
+
+  function runTest(subjectId, chapter) {
+    var questions = shuffle(chapter.questions);
     var totalSeconds = questions.length * SECONDS_PER_QUESTION;
     var remaining = totalSeconds;
+    var index = 0;
+    var picks = {}; // number -> letter
     var timerId = null;
-    var submitted = false;
 
-    function formatTime(s){
+    function fmtTime(s) {
       var m = Math.floor(s / 60);
       var sec = s % 60;
-      return m + ':' + (sec < 10 ? '0' : '') + sec;
+      return m + ":" + (sec < 10 ? "0" : "") + sec;
     }
 
-    function draw(){
-      app.innerHTML = '';
-
-      var topbar = el('div', {class:'quiz-topbar'});
-      var answeredN = Object.keys(answers).length;
-      var track = el('div', {class:'progress-track'});
-      track.appendChild(el('div', {class:'progress-fill', style:'width:' + Math.round((answeredN/questions.length)*100) + '%'}));
-      topbar.appendChild(track);
-      topbar.appendChild(el('span', {class:'progress-label'}, [answeredN + ' / ' + questions.length + ' answered']));
-      var timerEl = el('span', {class:'timer'}, [formatTime(remaining)]);
-      topbar.appendChild(timerEl);
-      app.appendChild(topbar);
-
-      var form = el('div', {class:'test-form'});
-      questions.forEach(function(q, i){
-        var card = questionCard(q, i);
-        var list = optionsList(q, function(letter){
-          answers[i] = letter;
-          Array.prototype.forEach.call(list.children, function(btn, bi){
-            btn.classList.toggle('is-selected', q.options[bi].letter === letter);
-          });
-          topbar.querySelector('.progress-label').textContent = Object.keys(answers).length + ' / ' + questions.length + ' answered';
-          topbar.querySelector('.progress-fill').style.width = Math.round((Object.keys(answers).length/questions.length)*100) + '%';
-        }, false);
-        if(answers[i] != null){
-          Array.prototype.forEach.call(list.children, function(btn, bi){
-            btn.classList.toggle('is-selected', q.options[bi].letter === answers[i]);
-          });
-        }
-        card.appendChild(list);
-        form.appendChild(card);
-      });
-      app.appendChild(form);
-
-      var controls = el('div', {class:'quiz-controls'});
-      var exitBtn = el('button', {class:'btn btn-ghost', type:'button'}, ['Exit']);
-      exitBtn.addEventListener('click', function(){ stopTimer(); goTo({subject:subject.id, chapter:chapter.id}); });
-      var submitBtn = el('button', {class:'btn btn-primary', type:'button'}, ['Submit test']);
-      submitBtn.addEventListener('click', function(){ finish(); });
-      controls.appendChild(exitBtn);
-      controls.appendChild(submitBtn);
-      app.appendChild(controls);
-
-      renderBreadcrumb([
-        {label:'Question Bank', state:{}},
-        {label:subject.label, state:{subject:subject.id}},
-        {label:chapter.label, state:{subject:subject.id, chapter:chapter.id}},
-        {label:'Timed Test'}
-      ]);
-
-      startTimer(timerEl);
+    function stopTimer() {
+      if (timerId) window.clearInterval(timerId);
+      timerId = null;
     }
 
-    function startTimer(timerEl){
-      stopTimer();
-      timerId = setInterval(function(){
+    function startTimer() {
+      timerId = window.setInterval(function () {
         remaining--;
-        if(timerEl && timerEl.isConnected){
-          timerEl.textContent = formatTime(Math.max(remaining,0));
-          timerEl.classList.toggle('is-low', remaining <= 60);
+        var timeEl = app.querySelector("[data-time]");
+        if (timeEl) timeEl.textContent = fmtTime(Math.max(remaining, 0));
+        if (remaining <= 0) {
+          stopTimer();
+          finish();
         }
-        if(remaining <= 0){ finish(); }
       }, 1000);
     }
-    function stopTimer(){ if(timerId){ clearInterval(timerId); timerId = null; } }
 
-    function finish(){
-      if(submitted) return;
-      submitted = true;
-      stopTimer();
-      app.innerHTML = '';
+    function renderQuestion() {
+      var q = questions[index];
+      var progressPct = Math.round((index / questions.length) * 100);
+      var picked = picks[q.number];
 
-      var keyed = 0, correct = 0;
-      questions.forEach(function(q, i){
-        if(q.correct){
-          keyed++;
-          if(answers[i] === q.correct) correct++;
+      var optionsHtml = q.options
+        .map(function (opt) {
+          return (
+            '<button class="option' +
+            (picked === opt.letter ? " is-picked" : "") +
+            '" data-letter="' +
+            opt.letter +
+            '">' +
+            '<span class="option__letter">' +
+            letterUp(opt.letter) +
+            "</span>" +
+            '<span class="option__text">' +
+            escapeHtml(opt.text) +
+            "</span>" +
+            "</button>"
+          );
+        })
+        .join("");
+
+      app.innerHTML =
+        '<div class="panel quiz">' +
+        '<button class="link-back" data-quit>&larr; Exit test</button>' +
+        '<div class="progress"><div class="progress__bar" style="width:' +
+        progressPct +
+        '%"></div></div>' +
+        '<p class="quiz__meta">Question ' +
+        (index + 1) +
+        " of " +
+        questions.length +
+        ' &middot; Time left <strong data-time>' +
+        fmtTime(remaining) +
+        "</strong></p>" +
+        '<div class="question">' +
+        '<p class="question__stem">' +
+        q.number +
+        ". " +
+        escapeHtml(q.stem) +
+        "</p>" +
+        questionMedia(q) +
+        '<div class="options">' +
+        optionsHtml +
+        "</div>" +
+        "</div>" +
+        '<div class="quiz__controls quiz__controls--split">' +
+        '<button class="btn" data-prev' +
+        (index === 0 ? " disabled" : "") +
+        ">Back</button>" +
+        '<button class="btn btn--primary" data-next>' +
+        (index === questions.length - 1 ? "Submit" : "Next") +
+        "</button>" +
+        "</div>" +
+        "</div>";
+
+      app.querySelector("[data-quit]").addEventListener("click", function () {
+        stopTimer();
+        renderModePicker(subjectId, chapter.id);
+      });
+      app.querySelectorAll(".option").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          picks[q.number] = btn.getAttribute("data-letter");
+          renderQuestion();
+        });
+      });
+      app.querySelector("[data-prev]").addEventListener("click", function () {
+        if (index > 0) {
+          index--;
+          renderQuestion();
         }
       });
-
-      var res = el('div', {class:'results'});
-      res.appendChild(el('div', {class:'results-score'}, [correct + ' / ' + (keyed || questions.length)]));
-      res.appendChild(el('p', {class:'results-sub'}, ['Scored out of questions with an answer key set.']));
-      if(keyed < questions.length){
-        res.appendChild(el('div', {class:'results-note'}, [
-          (questions.length - keyed) + ' question(s) have no answer marked yet, so they weren\u2019t scored.'
-        ]));
-      }
-
-      questions.forEach(function(q, i){
-        var picked = answers[i];
-        var status = !q.correct ? 'is-unkeyed' : (picked === q.correct ? 'is-correct' : 'is-wrong');
-        var item = el('div', {class:'review-item ' + status});
-        item.appendChild(el('p', {class:'review-q'}, ['Q' + (i+1) + '. ' + q.text]));
-        var yourLetter = picked ? picked.toUpperCase() : '\u2014';
-        item.appendChild(el('p', {class:'review-line'}, ['Your answer: ', el('b', null, [yourLetter])]));
-        if(q.correct){
-          item.appendChild(el('p', {class:'review-line'}, ['Correct answer: ', el('b', null, [q.correct.toUpperCase()])]));
+      app.querySelector("[data-next]").addEventListener("click", function () {
+        if (index < questions.length - 1) {
+          index++;
+          renderQuestion();
         } else {
-          item.appendChild(el('p', {class:'review-line'}, ['No answer key set for this question yet.']));
+          finish();
         }
-        res.appendChild(item);
       });
-
-      var controls = el('div', {class:'quiz-controls'});
-      var back = el('button', {class:'btn btn-ghost', type:'button'}, ['Back to chapter']);
-      back.addEventListener('click', function(){ goTo({subject:subject.id, chapter:chapter.id}); });
-      var retry = el('button', {class:'btn btn-primary', type:'button'}, ['Retake test']);
-      retry.addEventListener('click', function(){
-        answers = {}; remaining = totalSeconds; submitted = false; draw();
-      });
-      controls.appendChild(back);
-      controls.appendChild(retry);
-      res.appendChild(controls);
-      app.appendChild(res);
-
-      renderBreadcrumb([
-        {label:'Question Bank', state:{}},
-        {label:subject.label, state:{subject:subject.id}},
-        {label:chapter.label, state:{subject:subject.id, chapter:chapter.id}},
-        {label:'Results'}
-      ]);
     }
 
-    draw();
+    function finish() {
+      stopTimer();
+      var correctCount = 0;
+      var gradedSeen = 0;
+      questions.forEach(function (q) {
+        if (q.needsAnswerKey) return;
+        gradedSeen++;
+        var correctOpt = q.options.find(function (o) {
+          return o.correct;
+        });
+        if (picks[q.number] === correctOpt.letter) correctCount++;
+      });
+      renderResults(subjectId, chapter, correctCount, gradedSeen, "test", questions, picks);
+    }
+
+    // Confirmation screen before the clock starts.
+    app.innerHTML =
+      '<div class="panel">' +
+      "<h2>" +
+      escapeHtml(chapter.label) +
+      " &middot; Timed test</h2>" +
+      "<p>" +
+      questions.length +
+      " questions, " +
+      fmtTime(totalSeconds) +
+      " on the clock. The timer starts as soon as you press start.</p>" +
+      '<div class="quiz__controls">' +
+      '<button class="btn" data-back>Back</button>' +
+      '<button class="btn btn--primary" data-start>Start test</button>' +
+      "</div>" +
+      "</div>";
+    app.querySelector("[data-back]").addEventListener("click", function () {
+      renderModePicker(subjectId, chapter.id);
+    });
+    app.querySelector("[data-start]").addEventListener("click", function () {
+      startTimer();
+      renderQuestion();
+    });
   }
 
-  /* ---------------- router ---------------- */
-  function render(){
-    var app = document.getElementById('app');
-    if(!app) return;
+  /* ---------------- Results ---------------- */
 
-    var state = parseHash();
-    var data = bank();
+  function renderResults(subjectId, chapter, correctCount, gradedSeen, mode, questions, picks) {
+    var pct = gradedSeen ? Math.round((correctCount / gradedSeen) * 100) : 0;
 
-    if(!state.subject){ renderSubjectList(app); return; }
-    var subject = data.subjects.filter(function(s){ return s.id === state.subject; })[0];
-    if(!subject){ renderSubjectList(app); return; }
+    var reviewHtml = "";
+    if (mode === "test" && questions) {
+      reviewHtml =
+        '<div class="review">' +
+        questions
+          .map(function (q) {
+            var correctOpt = q.options.find(function (o) {
+              return o.correct;
+            });
+            var picked = picks[q.number];
+            var status = q.needsAnswerKey
+              ? "ungraded"
+              : picked === correctOpt.letter
+              ? "right"
+              : "wrong";
+            return (
+              '<div class="review-row review-row--' +
+              status +
+              '">' +
+              '<p class="review-row__stem">' +
+              q.number +
+              ". " +
+              escapeHtml(q.stem) +
+              "</p>" +
+              '<p class="review-row__answer">' +
+              (q.needsAnswerKey
+                ? "No answer key set for this question."
+                : "Your answer: " +
+                  (picked ? letterUp(picked) : "(skipped)") +
+                  " &middot; Correct: " +
+                  letterUp(correctOpt.letter)) +
+              "</p>" +
+              (q.explanation && !q.needsAnswerKey
+                ? '<p class="review-row__explanation">' + escapeHtml(q.explanation) + "</p>"
+                : "") +
+              "</div>"
+            );
+          })
+          .join("") +
+        "</div>";
+    }
 
-    if(!state.chapter){ renderChapterList(app, subject); return; }
-    var chapter = subject.chapters.filter(function(c){ return c.id === state.chapter; })[0];
-    if(!chapter){ renderChapterList(app, subject); return; }
+    app.innerHTML =
+      '<div class="panel results">' +
+      "<h2>" +
+      (mode === "practice" ? "Practice complete" : "Test submitted") +
+      "</h2>" +
+      '<p class="results__score">' +
+      correctCount +
+      "/" +
+      gradedSeen +
+      ' <span class="results__pct">(' +
+      pct +
+      "%)</span></p>" +
+      (gradedSeen < (questions ? questions.length : gradedSeen)
+        ? '<p class="flag">Some questions in this chapter have no marked answer yet and were left out of the score.</p>'
+        : "") +
+      '<div class="quiz__controls">' +
+      '<button class="btn" data-chapters>Choose another chapter</button>' +
+      '<button class="btn btn--primary" data-retry>Try again</button>' +
+      "</div>" +
+      reviewHtml +
+      "</div>";
 
-    if(state.mode === 'practice'){ renderPractice(app, subject, chapter); return; }
-    if(state.mode === 'test'){ renderTest(app, subject, chapter); return; }
-
-    renderModeSelect(app, subject, chapter);
+    app.querySelector("[data-chapters]").addEventListener("click", function () {
+      renderChapterList(subjectId);
+    });
+    app.querySelector("[data-retry]").addEventListener("click", function () {
+      renderModePicker(subjectId, chapter.id);
+    });
   }
 
-  window.addEventListener('hashchange', render);
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', render);
-  } else {
-    render();
-  }
+  renderSubjectList();
 })();

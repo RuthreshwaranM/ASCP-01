@@ -1,108 +1,174 @@
 /* ============================================================
-   SITE.JS — reads window.SITE (from site-config.js) and fills in
-   every [data-site-*] mount point. Nothing here needs editing;
-   change site-config.js instead.
+   SITE.JS
+   ------------------------------------------------------------
+   Reads window.SITE (site-config.js) and fills in:
+     [data-site-header]   the top bar + nav
+     [data-site-hero]     the big headline (index.html only)
+     [data-site-tiles]    the section grid (index.html only)
+     [data-site-footer]   the footer
+     #breadcrumbs         "Home / Section" trail (inner pages)
+   Nothing here needs editing — see site-config.js instead.
    ============================================================ */
-(function(){
+(function () {
+  "use strict";
 
-  function el(tag, attrs, children){
-    var e = document.createElement(tag);
-    attrs = attrs || {};
-    for(var k in attrs){
-      if(k === 'class') e.className = attrs[k];
-      else if(k === 'html') e.innerHTML = attrs[k];
-      else e.setAttribute(k, attrs[k]);
+  function currentFile() {
+    var path = window.location.pathname.split("/").pop();
+    return path === "" ? "index.html" : path;
+  }
+
+  function visibleSections(cfg) {
+    return (cfg.sections || []).filter(function (s) {
+      return s.show;
+    });
+  }
+
+  function renderHeader(cfg) {
+    var mount = document.querySelector("[data-site-header]");
+    if (!mount) return;
+    var here = currentFile();
+    var sections = visibleSections(cfg);
+
+    var navLinks = [{ id: "home", label: "Home", href: "index.html" }].concat(
+      sections.map(function (s) {
+        return { id: s.id, href: s.href, label: s.label };
+      })
+    );
+
+    var navHtml = navLinks
+      .map(function (link) {
+        var isActive = link.href === here;
+        return (
+          '<a class="topbar__link' +
+          (isActive ? " is-active" : "") +
+          '" href="' +
+          link.href +
+          '">' +
+          link.label +
+          "</a>"
+        );
+      })
+      .join("");
+
+    mount.innerHTML =
+      '<div class="topbar">' +
+      '<a class="topbar__brand" href="index.html">' +
+      '<img class="topbar__logo" src="' +
+      cfg.logo +
+      '" alt="" width="28" height="28">' +
+      '<span class="topbar__brandtext">' +
+      '<span class="topbar__name">' +
+      cfg.brandName +
+      "</span>" +
+      '<span class="topbar__line">' +
+      cfg.brandLine +
+      "</span>" +
+      "</span>" +
+      "</a>" +
+      '<button class="topbar__toggle" type="button" aria-label="Menu" aria-expanded="false">' +
+      '<span></span><span></span><span></span>' +
+      "</button>" +
+      '<nav class="topbar__nav" data-topbar-nav>' +
+      navHtml +
+      "</nav>" +
+      "</div>";
+
+    var toggle = mount.querySelector(".topbar__toggle");
+    var nav = mount.querySelector("[data-topbar-nav]");
+    if (toggle && nav) {
+      toggle.addEventListener("click", function () {
+        var open = nav.classList.toggle("is-open");
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      });
     }
-    (children || []).forEach(function(c){
-      e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  }
+
+  function renderHero(cfg) {
+    var mount = document.querySelector("[data-site-hero]");
+    if (!mount) return;
+    mount.innerHTML =
+      '<div class="hero">' +
+      '<p class="hero__kicker">' +
+      cfg.brandLine +
+      "</p>" +
+      "<h1 class=\"hero__title\">" +
+      cfg.tagline +
+      "</h1>" +
+      "</div>";
+  }
+
+  function renderTiles(cfg) {
+    var mount = document.querySelector("[data-site-tiles]");
+    if (!mount) return;
+    var sections = visibleSections(cfg);
+    mount.innerHTML =
+      '<div class="tiles">' +
+      sections
+        .map(function (s) {
+          return (
+            '<a class="tile" href="' +
+            s.href +
+            '">' +
+            '<span class="tile__icon" aria-hidden="true">' +
+            s.icon +
+            "</span>" +
+            '<span class="tile__label">' +
+            s.label +
+            "</span>" +
+            '<span class="tile__blurb">' +
+            s.blurb +
+            "</span>" +
+            "</a>"
+          );
+        })
+        .join("") +
+      "</div>";
+  }
+
+  function renderFooter(cfg) {
+    var mount = document.querySelector("[data-site-footer]");
+    if (!mount) return;
+    var linksHtml = (cfg.links || [])
+      .map(function (l) {
+        return '<a href="' + l.url + '">' + l.label + "</a>";
+      })
+      .join("");
+    mount.innerHTML =
+      '<div class="footer">' +
+      '<p class="footer__note">' +
+      cfg.footerNote +
+      "</p>" +
+      '<nav class="footer__links">' +
+      linksHtml +
+      "</nav>" +
+      "</div>";
+  }
+
+  function renderBreadcrumbs(cfg) {
+    var mount = document.getElementById("breadcrumbs");
+    if (!mount) return;
+    var here = currentFile();
+    var section = (cfg.sections || []).find(function (s) {
+      return s.href === here;
     });
-    return e;
+    var label = section ? section.label : document.title;
+    mount.innerHTML =
+      '<a href="index.html">Home</a><span aria-hidden="true"> / </span><span>' +
+      label +
+      "</span>";
   }
 
-  function currentPage(){
-    var p = location.pathname.split('/').pop();
-    return p || 'index.html';
+  function init() {
+    var cfg = window.SITE || {};
+    renderHeader(cfg);
+    renderHero(cfg);
+    renderTiles(cfg);
+    renderFooter(cfg);
+    renderBreadcrumbs(cfg);
   }
 
-  function buildHeader(site){
-    var wrap = el('div', {class:'site-header-inner'});
-
-    var brand = el('a', {class:'brand', href:'index.html'});
-    if(site.logo) brand.appendChild(el('img', {class:'brand-logo', src:site.logo, alt:site.brandName || ''}));
-    var brandText = el('div', {class:'brand-text'});
-    brandText.appendChild(el('span', {class:'brand-name'}, [site.brandName || '']));
-    if(site.brandLine) brandText.appendChild(el('span', {class:'brand-line'}, [site.brandLine]));
-    brand.appendChild(brandText);
-    wrap.appendChild(brand);
-
-    var nav = el('nav', {class:'site-nav'});
-    var cur = currentPage();
-    (site.sections || []).filter(function(s){ return s.show; }).forEach(function(s){
-      nav.appendChild(el('a', {
-        href: s.href,
-        class: 'nav-link' + (cur === s.href ? ' is-active' : '')
-      }, [s.label]));
-    });
-    wrap.appendChild(nav);
-
-    var toggle = el('button', {class:'nav-toggle', type:'button', 'aria-label':'Toggle menu'}, ['\u2630']);
-    toggle.addEventListener('click', function(){ nav.classList.toggle('is-open'); });
-    wrap.appendChild(toggle);
-
-    return wrap;
-  }
-
-  function buildFooter(site){
-    var wrap = el('div', {class:'site-footer-inner'});
-    wrap.appendChild(el('p', {class:'footer-note'}, [site.footerNote || '']));
-    var links = el('div', {class:'footer-links'});
-    (site.links || []).forEach(function(l){
-      links.appendChild(el('a', {href:l.url, class:'footer-link'}, [l.label]));
-    });
-    wrap.appendChild(links);
-    return wrap;
-  }
-
-  function buildHero(site){
-    var wrap = el('div', {class:'hero'});
-    if(site.brandLine) wrap.appendChild(el('p', {class:'hero-eyebrow'}, [site.brandLine]));
-    wrap.appendChild(el('h1', {class:'hero-title'}, [site.tagline || '']));
-    var bankSection = (site.sections || []).filter(function(s){ return s.show; })[0];
-    if(bankSection){
-      wrap.appendChild(el('a', {class:'hero-cta', href:bankSection.href}, ['Open ' + bankSection.label]));
-    }
-    return wrap;
-  }
-
-  function buildTiles(site){
-    var wrap = el('div', {class:'tiles'});
-    (site.sections || []).filter(function(s){ return s.show; }).forEach(function(s){
-      var a = el('a', {class:'tile', href:s.href});
-      if(s.icon) a.appendChild(el('span', {class:'tile-icon'}, [s.icon]));
-      a.appendChild(el('h3', {class:'tile-label'}, [s.label]));
-      if(s.blurb) a.appendChild(el('p', {class:'tile-blurb'}, [s.blurb]));
-      wrap.appendChild(a);
-    });
-    return wrap;
-  }
-
-  function mount(selector, builder, site){
-    document.querySelectorAll(selector).forEach(function(target){
-      target.innerHTML = '';
-      target.appendChild(builder(site));
-    });
-  }
-
-  function init(){
-    var site = window.SITE || {};
-    mount('[data-site-header]', buildHeader, site);
-    mount('[data-site-footer]', buildFooter, site);
-    mount('[data-site-hero]', buildHero, site);
-    mount('[data-site-tiles]', buildTiles, site);
-  }
-
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
   }

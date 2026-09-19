@@ -1,25 +1,27 @@
 /* ============================================================
-   THEME.CSS — the six hex codes the README talks about live here.
-   Change these and the whole site follows.
+   THEME.CSS
+   ------------------------------------------------------------
+   "Akasa" palette — Sunrise Orange + Passionate Purple on white,
+   the colour language of India's Akasa Air (orange + purple,
+   light background, warm and youthful rather than a cockpit-at-
+   -night look). Change the six hex codes below to re-colour the
+   whole site — style.css and academy.css only ever reference
+   these variables, they never hard-code a colour.
    ============================================================ */
-:root{
-  --bg:            #0F1620;   /* page background — night-cruise navy */
-  --surface:       #16202E;   /* cards, header, footer */
-  --surface-raised:#1D2A3B;   /* hovered / active surfaces */
-  --border:        #29394F;
-  --text:          #E9EEF5;
-  --muted:         #8CA0B7;
-  --accent:        #F2A93B;   /* instrument-glow amber */
-  --accent-strong: #FFC569;
-  --good:          #55B7A6;   /* NAV-light teal */
-  --good-soft:     rgba(85,183,166,.14);
-  --bad:           #E2574C;   /* warning-light red */
-  --bad-soft:      rgba(226,87,76,.14);
+:root {
+  --ink:      #FFFFFF;   /* page background */
+  --panel:    #FBF7FF;   /* card / header / footer surfaces */
+  --line:     #EADDF5;   /* borders, dividers, bezels */
+  --paper:    #241735;   /* primary text */
+  --signal:   #FC6404;   /* Sunrise Orange — primary accent, links, focus */
+  --ok:       #17935F;   /* green — correct answers, success states */
+}
 
-  --radius-sm: 6px;
-  --radius-md: 12px;
-
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-body:    'Inter', sans-serif;
-  --font-mono:    'JetBrains Mono', monospace;
+:root {
+  --accent2:       #6B1F8F;  /* Passionate Purple — secondary accent */
+  --accent2-deep:  #4A1266;  /* purple, darker, for gradients/hover */
+  --highlight:     #FFC42E;  /* rising-sun yellow — small highlights only */
+  --danger:  #D53434;
+  --muted:   #7C6B92;
+  --paper-dim: #4B3A66;
 }
