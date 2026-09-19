@@ -1,0 +1,25 @@
+/* ============================================================
+   THEME.CSS — the six hex codes the README talks about live here.
+   Change these and the whole site follows.
+   ============================================================ */
+:root{
+  --bg:            #0F1620;   /* page background — night-cruise navy */
+  --surface:       #16202E;   /* cards, header, footer */
+  --surface-raised:#1D2A3B;   /* hovered / active surfaces */
+  --border:        #29394F;
+  --text:          #E9EEF5;
+  --muted:         #8CA0B7;
+  --accent:        #F2A93B;   /* instrument-glow amber */
+  --accent-strong: #FFC569;
+  --good:          #55B7A6;   /* NAV-light teal */
+  --good-soft:     rgba(85,183,166,.14);
+  --bad:           #E2574C;   /* warning-light red */
+  --bad-soft:      rgba(226,87,76,.14);
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
