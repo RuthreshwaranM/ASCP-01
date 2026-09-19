@@ -8,7 +8,7 @@
 window.SITE = {
 
   /* ---------- 1. BRANDING ---------- */
-  brandName:  "CADET WINGS Aryan",              // big name in the header
+  brandName:  "CADET WINGS",              // big name in the header
   brandLine:  "BATCH 01",                 // small line under it
   tagline:    "First batch. First solo. First everything.",
   logo:       "images/logo.svg",          // swap in your own PNG/SVG here
