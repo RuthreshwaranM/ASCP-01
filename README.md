@@ -15,7 +15,8 @@ exist, contact links, protection on/off.
 | Change colours              | the six hex codes at the top of `css/theme.css`                 |
 | Add questions               | `data/pa28-archer.js` — instructions are in the file header     |
 | Add a new subject           | copy `data/pa28-archer.js`, add a `<script>` line in `bank.html`|
-| Add notes                   | copy a `<div class="block">` in `notes.html`                    |
+| Add a note                  | `data/notes.js` — instructions are in the file header            |
+| Add a notes subject         | copy a `registerNotesSubject(...)` line in `data/notes.js`      |
 | Swap the logo               | replace `images/logo.svg` (or point `logo:` at a PNG)           |
 | Turn protection off         | `protection: false`                                             |
 
@@ -29,6 +30,22 @@ exist, contact links, protection on/off.
 
 2, 3 or 4 options all work. `[image: file.png]` on its own line adds a
 diagram (put the file in `/images`).
+
+## Notes format
+Notes are organised into subjects (Navigation, Meteorology, Air
+Regulation, Technical General, or any others you add) — edit
+`data/notes.js`, nothing else. Inside a note:
+
+    Plain text becomes a paragraph.
+
+    Leave a blank line between paragraphs.
+
+    - a line starting with "- " becomes a bullet
+    - another bullet
+
+    ## A Subheading
+
+`[image: file.png]` works the same way as in the question bank.
 
 ## About the protection
 `js/protection.js` blocks right-click, F12, Ctrl+U/S/P, text selection,

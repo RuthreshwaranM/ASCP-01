@@ -6,28 +6,14 @@
 <script src="site-config.js"></script><title>Notes &middot; Batch 01</title></head>
 <body>
 <header data-site-header></header>
-<div class="page">
-<h2>Ground School Notes</h2>
-<p>Add your notes below. Each topic is one &lt;div class="block"&gt; — copy a block, change the text, done.</p>
-
-<!-- ===== COPY THIS BLOCK FOR EACH NEW NOTE ===== -->
-<div class="block">
-  <h3>PA-28-181 Archer III — Key Numbers</h3>
-  <ul>
-    <li>Engine: Lycoming O-360-A4M, 180 BHP @ 2700 RPM</li>
-    <li>Propeller: Sensenich fixed-pitch, two-blade</li>
-    <li>Fuel: 100LL, 48 US gal total / 48 usable (two 24 gal tanks)</li>
-    <li>Oil: 8 qt capacity, 6 qt minimum for flight</li>
-    <li>Electrical: 28 V DC, 60 A alternator, 12 V battery</li>
-  </ul>
-</div>
-
-<div class="block">
-  <h3>Sample Note Two</h3>
-  <p>Replace this with your own content, or delete the whole block.</p>
-</div>
-<!-- ============================================= -->
-</div>
+<nav class="breadcrumbs" id="breadcrumbs"></nav>
+<main id="app"></main>
 <footer data-site-footer></footer>
-<script src="js/site.js"></script><script src="js/protection.js" defer></script>
+
+<script src="js/site.js"></script>
+<script src="js/notes-parser.js"></script>
+<!-- YOUR NOTES. Edit this one file to add subjects and notes. -->
+<script src="data/notes.js"></script>
+<script src="js/notes-app.js"></script>
+<script src="js/protection.js" defer></script>
 </body></html>

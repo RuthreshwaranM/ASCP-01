@@ -267,10 +267,10 @@ c. 1.5 USG
 d. 4 USG (2 USG per tank)
 
 43. Approved Gearbox Oil are:
-*a. Centurion Gearbox Oil N1
+a. Centurion Gearbox Oil N1
 b. Shell Spirax S6 GXME 75W-80
 c. Shell Spirax EP 75W-90
-d. All of the Above
+*d. All of the Above
 
 44. If the propeller speed control fails, Climbs are performed at:
 *a. 65 KIAS & 100% Load
@@ -483,10 +483,10 @@ c. True but only in cold weather
 d. True but only in hot weather
 
 79. Red Range of Electrical System voltage is:
-*a. 0 - 24.9 V
+a. 0 - 24.9 V
 b. 25 - 25.9 V
 c. > 30V
-d. Both A and C
+*d. Both A and C
 
 80. Alternator Red Range is:
 *a. >60 Amps
@@ -817,10 +817,10 @@ c. All Aircrafts are primed with etching primer and finished with a normal finis
 d. None of the above
 
 135. How do winds affect the Take off roll?
-*a. Decrease 10% for each 9 kts Headwind
+a. Decrease 10% for each 9 kts Headwind
 b. Decrease 9% for each 10 kts headwind
 c. Increase 10% for each 2 kts tailwind
-d. Both A and C
+*d. Both A and C
 
 136. For operation on dry, grass runway, increase distances by:
 *a. 15% of the ground roll figure
