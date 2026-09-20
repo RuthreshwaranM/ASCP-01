@@ -32,17 +32,46 @@
 
 registerNotesSubject("navigation", "Navigation");
 
-registerNotesTopic("navigation", "Navigationss", `
+registerNotesTopic("navigation", "Navigations", `
 
-This is a normal paragraph. Just type. Leave a blank line
-before the next paragraph, like this one.
-
-- This is a bullet point
-- So is this
-- Bullets stay bullets until a blank line
-
-## This is a subheading
-Text under a subheading works exactly like any other paragraph.
+## Shape of Earth:
+## Equator:
+## Great Circle:
+## Rhumbline
+## Prime Meridian/Greenwich Meridian:
+## Latitude
+## Graticule
+## Small circle
+## Meridian
+## Longitude
+## Spatial Small Circle
+## Earth rotates :
+## Dev. of Earth from normal axis
+## Division of degree:
+## Change in Longitude:
+## Nautical mile:
+## Kilometer
+## Map
+## Chart
+## Types of Charts
+## Classification of projections:
+## Properties of ideal projection
+## Mercator Chart
+## Point of Projection
+## Units conversio
+## Pressure Instrument
+## ASI
+## Altimeter
+## VSI
+## Gyro Instrument
+## Properties of Gyro
+## Types of Gyro
+## DGI
+## AH
+## TSI
+## Endurance
+## Q-codes
+## VOR
 
 `);
 

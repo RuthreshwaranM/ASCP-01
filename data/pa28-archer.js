@@ -19,60 +19,70 @@ registerChapterText("piper-archer-dx", "PA28-QB-1", "PA28 Question Bank 1", `
 b. Thielert Aircraft Engines
 c. Continental Motors
 d. Textron Lycoming Engines
+[explanation-image: engine.png]
 
 2. The Engine Model number is:
 *a. TAE 125-02-114
 b. TAE 125-02-99
 c. IO-360-D2J
 d. IO-360-A4M
+[explanation-image: engine.png]
 
 3. The Propeller Manufacturer is:
 *a. MT Propeller Entwicklung GmbH
 b. MTV Propellers
 c. Sensenich Propellers
-d. McCauley Accessory Division
+d. McCauley Accessory Division 
+[explanation-image: properller.png]
 
 4. Propeller Model Number for the Piper Archer DX is:
 *a. MTV-6-A/190-69
 b. MTV-6-A/187-129
 c. MT-6-A/187-129
 d. MT-6-A/190-69
+[explanation-image: properller.png]
 
 5. Number of Blades in the Propeller of the Piper Archer DX is:
 *a. 3 Blade Variable Pitch
 b. 2 Blade Fixed Pitch
 c. 3 Blade Fixed Pitch
 d. 2 Blade Variable Pitch
+[explanation-image: properller.png]
 
 6. Diameter of the propeller blades are:
 *a. 1.90m
 b. 1.87m
 c. 1.87ft
 d. 1.90ft
+[explanation-image: properller.png]
 
 7. Approved fuels for the Piper Archer DX are:
 *a. JET A-1/JET A
 b. AVGAS 100LL
 c. AVGAS 100
 d. ATF/Mogas
+[explanation-image: fuel.png]
 
 8. Take off and Max Continuous Power of the Engine is:
 *a. 114 kW (155 HP)
 b. 114 HP (155 kW)
 c. 99 kW (135 HP)
 d. 135 kW (99 HP)
+[explanation-image: engine.png]
 
 9. Take off and Max. Continuous RPM is:
 *a. 2300 RPM
 b. 2000 RPM
 c. 2400 RPM
 d. 2700 RPM
+[explanation-image: engine.png]
 
 10. Max. Recommended Cruise:
 *a. 85%
 b. 100% for 5 minutes
 c. 85% for 5 minutes
 d. 90%
+[explanation-image: engine.png]
 
 11. What is Engine Load:
 *a. Available percentage of max. Engine power
@@ -85,30 +95,35 @@ d. Available percentage of max. Propeller thrust
 b. 1 bar
 c. 2.3 bar (33.4 psi)
 d. 6 bar (87 psi)
+[explanation-image: oilpx.png]
 
 13. Minimum Oil Pressure (during take-off):
 *a. 2.3 bar (33.4 psi)
 b. 1.2 bar (14.5 psi)
 c. 1 bar
 d. 6 bar (87 psi)
+[explanation-image: oilpx.png]
 
 14. Minimum Oil Pressure (in flight):
 *a. 2.3 bar (33.4 psi)
 b. 1.2 bar (14.5 psi)
 c. 1 bar
 d. 6 bar (94 psi)
+[explanation-image: oilpx.png]
 
 15. Maximum Oil Pressure (during take-off):
 *a. 6 bar (87 psi)
 b. 1.2 bar (14.5 psi)
 c. 1 bar
 d. 6.5 bar (94 psi)
+[explanation-image: oilpx.png]
 
 16. Maximum Oil Pressure (cold start < 20 sec):
 *a. 2.3 bar (33.4 psi)
 b. 1.2 bar (14.5 psi)
 c. 1 bar
 d. 6 bar (94 psi)
+[explanation-image: oilpx.png]
 
 17. DOHC Stands for:
 *a. Double Overhead Camshaft
@@ -126,49 +141,57 @@ d. Full Authority Direct Engine Control
 *a. -32 deg C
 b. 50 deg C
 c. -30 deg C
-d. 60 deg C
+d. 60 deg C 
+[explanation-image: oiltemp.png]
 
 20. Maximum Engine Oil Operating Temperature is:
 *a. 140 deg C
 b. 50 deg C
 c. 120 deg C
 d. 105 deg C
+[explanation-image: oiltemp.png]
 
 21. Minimum Oil Temperature Operating Limit is:
 *a. 50 deg C
 b. 60 deg C
 c. -32 deg C
 d. -30 deg C
+[explanation-image: oiltemp.png]
 
 22. Minimum Engine Starting Coolant Temperature is:
 *a. -32 deg C
 b. -30 deg C
 c. -35 deg C
-d. 32 deg C
+d. 32 deg C coolanttemp.png
+[explanation-image: coolanttemp.png]
 
 23. Minimum Operating Coolant Temperature is:
 *a. 60 deg C
 b. 50 deg C
 c. 32 deg C
 d. 30 deg C
+[explanation-image: coolanttemp.png]
 
 24. Maximum Operating Coolant Temperature is:
 *a. 105 deg C
 b. 120 deg C
 c. 140 deg C
 d. 90 deg C
+[explanation-image: coolanttemp.png]
 
 25. Minimum Operating Gearbox Temperature is:
 *a. -30 deg C
 b. -32 deg C
 c. 32 deg C
-d. 30 deg C
+d. 30 deg C 
+[explanation-image: gearboxtemp.png]
 
 26. Maximum Operating Gearbox Temperature is:
 *a. 120 deg C
 b. 105 deg C
 c. 90 deg C
 d. 140 deg C
+[explanation-image: gearboxtemp.png]
 
 27. Maximum Oil Consumption is:
 *a. 0.1l/h

@@ -56,6 +56,7 @@
         number: q.number,
         stem: q.stem,
         images: q.images,
+        explanationImages: q.explanationImages,
         explanation: q.explanation,
         needsAnswerKey: q.needsAnswerKey,
         options: srcOptions.map(function (o, i) {
@@ -73,6 +74,21 @@
           '<img class="question__image" src="images/' +
           escapeHtml(file) +
           '" alt="Diagram for question ' +
+          q.number +
+          '">'
+        );
+      })
+      .join("");
+  }
+
+  function explanationMedia(q) {
+    if (!q.explanationImages || !q.explanationImages.length) return "";
+    return q.explanationImages
+      .map(function (file) {
+        return (
+          '<img class="question__image" src="images/' +
+          escapeHtml(file) +
+          '" alt="Explanation diagram for question ' +
           q.number +
           '">'
         );
@@ -494,7 +510,8 @@
           "</p>" +
           (q.explanation
             ? '<p class="feedback__explanation">' + escapeHtml(q.explanation) + "</p>"
-            : "");
+            : "") +
+          explanationMedia(q);
       }
       feedback.removeAttribute("hidden");
     }
@@ -708,6 +725,7 @@
               (q.explanation && !q.needsAnswerKey
                 ? '<p class="review-row__explanation">' + escapeHtml(q.explanation) + "</p>"
                 : "") +
+              (!q.needsAnswerKey ? explanationMedia(q) : "") +
               "</div>"
             );
           })

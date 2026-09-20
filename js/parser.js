@@ -14,9 +14,12 @@
      Explanation: optional, shown in Practice mode.
 
    2, 3 or 4 options all work. A line that is exactly
-   [image: file.png] on its own adds a diagram (file lives in
-   /images).
-   ============================================================ */
+   [image: file.png] on its own adds a diagram shown with the
+   QUESTION (before you answer). A line that is exactly
+   [explanation-image: file.png] adds an image shown only in the
+   EXPLANATION, after you've answered — use this for a diagram
+   that would give the answer away. Both kinds of file live in
+   /images. ============================================================ */
 (function () {
   "use strict";
 
@@ -24,6 +27,7 @@
   var OPTION_START = /^\s*(\*)?\s*([a-dA-D])\s*\.\s*(.*)$/;
   var EXPLANATION_START = /^\s*Explanation\s*:\s*(.*)$/i;
   var IMAGE_LINE = /^\s*\[\s*image\s*:\s*(.+?)\s*\]\s*$/i;
+  var EXPLANATION_IMAGE_LINE = /^\s*\[\s*explanation-image\s*:\s*(.+?)\s*\]\s*$/i;
 
   function parseChapterText(rawText) {
     var lines = String(rawText || "").split(/\r?\n/);
@@ -58,6 +62,7 @@
           options: [],
           explanation: "",
           images: [],
+          explanationImages: [],
           needsAnswerKey: false
         };
         continue;
@@ -72,6 +77,12 @@
           text: optMatch[3] || "",
           correct: !!optMatch[1]
         });
+        continue;
+      }
+
+      var explImgMatch = EXPLANATION_IMAGE_LINE.exec(line);
+      if (explImgMatch) {
+        current.explanationImages.push(explImgMatch[1]);
         continue;
       }
 
