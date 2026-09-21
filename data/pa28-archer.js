@@ -119,10 +119,10 @@ d. 6.5 bar (94 psi)
 [explanation-image: oilpx.png]
 
 16. Maximum Oil Pressure (cold start < 20 sec):
-a. 2.3 bar (33.4 psi)
+*a. 2.3 bar (33.4 psi)
 b. 1.2 bar (14.5 psi)
 c. 1 bar
-*d. 6 bar (94 psi)
+d. 6 bar (94 psi)
 [explanation-image: oilpx.png]
 
 17. DOHC Stands for:
@@ -136,6 +136,7 @@ d. Direct Overhead Crankshaft
 b. Full Autonomy Digital Engine Control
 c. Fully Automatic Digital Engine Control
 d. Full Authority Direct Engine Control
+[explanation-image: FADEC.png]
 
 19. Minimum Engine Starting Oil Temperature is:
 *a. -32 deg C
@@ -198,6 +199,7 @@ d. 140 deg C
 b. 0.5l/h
 c. 1l/h
 d. 5l/h
+[explanation-image: oilpx.png]
 
 28. Minimum Turning Radius from pivot point to wingtip is:
 *a. 30ft
@@ -210,54 +212,63 @@ d. 40ft
 b. 36 feet 5 inches
 c. 35 feet 5 inches
 d. 36 feet 6 inches
+[explanation-image: wingspan.png]
 
 30. Vne for the Piper Archer DX is:
 *a. 154 KIAS
 b. 154 KCAS
 c. 163 KIAS
 d. 163 KCAS
+[explanation-image: vne.png]
 
 31. Vno for the Piper Archer Dx is:
 *a. 125 KIAS
 b. 125 KCAS
 c. 99 KIAS
 d. 129 KIAS
+[explanation-image: vno.png]
 
 32. Design Maneuvering Speed (Va) for the Piper is:
 *a. 113 KIAS at 2550 lbs.
 b. 113 KCAS at 2550 lbs.
 c. 99 KIAS at 1635 lbs.
 d. 129 KIAS at 1635 lbs.
+[explanation-image: vo.png]
 
 33. Vfe for the Piper Archer Dx is:
 *a. 102 KIAS
 b. 100 KIAS
 c. 102 KCAS
 d. 99 KIAS
+[explanation-image: vfe.png]
 
 34. Red Radial Marking on the Air Speed Indicator shows:
 *a. 154 KTS
 b. 125 KTS
 c. 163 KTS
 d. 45 KTS
+[explanation-image: redline.png]
 
 35. Maximum Ramp Weight for the Piper Archer DX in normal category is:
 *a. 2558 lbs.
 b. 2550 lbs.
 c. 2138 lbs.
 d. 2130 lbs.
+[explanation-image: weight.png]
 
 36. The approved Engine Oil for use on the Piper Archer DX is:
 *a. All of the Above
 b. Aeroshell Oil Diesel 10W-40
 c. Shell Helix Ultra 5W-40
 d. AeroShell Oil Diesel Ultra
+[explanation-image: engineoil.png]
 
 37. The coolant used for the Piper Archer DX is:
 *a. Water/Radiator Protection at a ratio of 50:50
 b. Water/Radiator Protection at a ratio of 70:30
 c. Water with 1% of Radiator Protection fluid
 d. None of the above
+[explanation-image: coolant.png]
 
 38. If the main battery and alternator fails, the engine will operate on FADEC A backup battery for:
 *a. 30 min
