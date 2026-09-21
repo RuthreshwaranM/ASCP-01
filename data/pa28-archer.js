@@ -380,24 +380,28 @@ d. None of the Above
 b. 28V
 c. 60V
 d. 12V
+[explanation-image: volt.png]
 
 54. Nose Gear Tyre Pressure:
 *a. 18 psi
 b. 24 psi
 c. 16 psi
 d. None of the above
+[explanation-image: psi.png]
 
 55. Main Gear Tyre Pressure:
 *a. 24 psi
 b. 18 psi
 c. 16 psi
 d. None of the above
+[explanation-image: psi.png]
 
 56. ELT Testing should be done on the freq of:
 *a. 121.5 Mhz
 b. 406 Mhz
 c. 121.5 Khz
 d. 406 Khz
+[explanation-image: elt.png]
 
 57. During ELT Testing, the pulses should be restricted to _________ pulses:
 *a. 3
@@ -410,36 +414,42 @@ d. 1
 b. 10 kts above stall speed
 c. At stall speed
 d. 5 kts above stall speed
+[explanation-image: stall.png]
 
 59. Max allowed baggage in baggage compartment is:
 *a. 200 lbs.
 b. 120 lbs.
 c. 100 lbs.
 d. None of the above
+[explanation-image: baggage.png]
 
 60. Baggage area is:
 *a. 24 cu in.
 b. 30 cu.in
 c. 200 cu in.
 d. None of the above
+[explanation-image: baggage.png]
 
 61. Warm up procedure is:
 *a. 890 rpm for 2 min, then 1400 rpm till OT 50 deg C and CT 60 deg C
 b. 1400 rpm till OT 50 deg C and CT 60 deg C
 c. 890 rpm for 2 min
 d. None of the above
+[explanation-image: warm.png]
 
 62. Starter motor can be operated for a maximum of ______ seconds per attempt.
 *a. 10 seconds
 b. 6 seconds
 c. 20 seconds
 d. 8 seconds
+[explanation-image: startup.png]
 
 63. After 6 attempts to start, _______ hours must be given to cool the starter motor:
 *a. 1/2 hr
 b. 1 hr
 c. 2 hr
 d. 1/4 hr
+[explanation-image: startup.png]
 
 64. PFD stands for:
 *a. Primary Flight Display
@@ -458,150 +468,175 @@ d. None of the above
 b. Air Cooled
 c. Oil Cooled
 d. Air and Oil Cooled
+[explanation-image: aboutengine.png]
 
 67. The Engine on the Piper Archer DX is:
 *a. In Line 4 Cylinder
 b. In Line 6 cylinder
 c. Horizontally Opposed 4 cylinder
 d. Horizontally Opposed 6 cylinder
+[explanation-image: aboutengine.png]
 
 68. The Engine on the Piper Archer DX has a displacement of:
 *a. 121.5 cubic inches
 b. 125 cubic inches
 c. 114 cubic inches
 d. 121.5 cubic centimeters
+[explanation-image: control.png]
 
 69. The Engine on the Piper Archer DX is:
 *a. Turbocharged
 b. Supercharged
 c. Turbo-Supercharged
 d. None of the Above
+[explanation-image: aboutengine.png]
 
 70. The Engine on the Piper Archer DX is:
 *a. Controlled by FADEC
 b. Controlled by ECU
 c. Controlled by Magnetos
 d. None of the above
+[explanation-image: control.png]
 
 71. The freezing point of the coolant is:
 *a. -36 deg C
 b. -30 deg C
 c. -32 deg C
 d. None of the above
+[explanation-image: coolantfrez.png]
 
 72. The Yellow Arc in the ASI is:
 *a. 125 KTS to 154 KTS
 b. 99 KTS to 154 KTS
 c. 50 KTS to 124 KTS
 d. 45 KTS to 104 KTS
+[explanation-image: asi.png]
 
 73. The Green Arc in the ASI is:
 *a. 50 KTS to 124 KTS
 b. 45 KTS to 104 KTS
 c. 99 KTS to 154 KTS
 d. 125 KTS to 154 KTS
+[explanation-image: asi.png]
 
 74. White Arc in the ASI is:
 *a. 45 KTS to 104 KTS
 b. 50 KTS to 124 KTS
 c. 99 KTS to 154 KTS
 d. 125 KTS to 154 KTS
+[explanation-image: asi.png]
 
 75. Final Approach speed with Flaps 40 deg is:
 *a. 63 KTS
 b. 70 KTS
 c. 65 KTS
 d. None of the above
+[explanation-image: approach.png]
 
 76. Best rate of climb with flaps 10 deg is:
 *a. 65 KIAS
 b. 70 KIAS
 c. 75 KIAS
 d. 79 KIAS
+[explanation-image: climb.png]
 
 77. Fuel Tanks must be switched every ________ Minutes:
 *a. 30 min
 b. 20 min
 c. 60 min
 d. 10 min
+[explanation-image: fueltank.png]
 
 78. During Takeoff, Fuel Pump must be ON:
 *a. True
 b. False
 c. True but only in cold weather
 d. True but only in hot weather
+[explanation-image: fuelpump.png]
 
 79. Red Range of Electrical System voltage is:
 a. 0 - 24.9 V
 b. 25 - 25.9 V
 c. > 30V
 *d. Both A and C
+[explanation-image: range.png]
 
 80. Alternator Red Range is:
 *a. >60 Amps
 b. >60 Volts
 c. 0-52 Volts
 d. 53-60 Amps
+[explanation-image: range.png]
 
 81. Gearbox temperature green range:
 *a. <115 deg C
 b. 115-120 deg C
 c. >120 deg C
 d. None of the above
+[explanation-image: range.png]
 
 82. Gearbox Temperature Amber Range:
 *a. 115 - 120 deg C
 b. <115 deg C
 c. >120 deg C
 d. None of the above
+[explanation-image: range.png]
 
 83. Gearbox temperature red range:
 *a. >120 deg C
 b. <115 deg C
 c. 115 - 120 deg C
 d. None of the above
+[explanation-image: range.png]
 
 84. Tachometer Green Range:
 *a. 0 - 2300 RPM
 b. >2300 RPM
 c. 1200 - 2300 RPM
 d. 0 - 1200 RPM
+[explanation-image: range.png]
 
 85. Tachometer Red Range:
 *a. >2300 RPM
 b. 0 - 2300 RPM
 c. 1200 - 2300 RPM
 d. 0 - 1200 RPM
+[explanation-image: range.png]
 
 86. Oil Pressure Red Range:
 *a. 0 - 1.1 bar & > 6.5 bar
 b. 1.2 to 2.2 bar
 c. Both a and b
 d. None of the above
+[explanation-image: range.png]
 
 87. Oil Temperature green range is:
 *a. 50 - 129 deg C
 b. 130 - 140 deg C
 c. -32 - 49 deg C
 d. None of the above
+[explanation-image: range.png]
 
 88. Oil pressure green range:
 *a. 2.3 to 5.1 bar
 b. 5.2 to 6.5 bar
 c. 1.2 to 2.2 bar
 d. None of the above
+[explanation-image: range.png]
 
 89. Coolant Temperature green range:
 *a. 60 - 100 deg C
 b. 101 - 105 deg C
 c. >105 deg C
 d. None of the above
+[explanation-image: range.png]
 
 90. Fuel Temperature green range:
 *a. 0 - 65 deg C
 b. < -30 deg C
 c. >75 deg C
 d. None of the above
+[explanation-image: range.png]
 
 91. FADEC Warning in the G1000 will display as:
 *a. ECU A Fail / ECU B Fail
