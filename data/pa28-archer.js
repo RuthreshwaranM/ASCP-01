@@ -275,90 +275,105 @@ d. None of the above
 b. 120 min
 c. 60 min
 d. 45 min
+[explanation-image: alt.png]
 
 39. Max certified altitude is:
 *a. 16400ft
 b. 15400ft
 c. 10000ft
 d. 13000ft
+[explanation-image: altitide.png]
 
 40. Total Fuel Capacity of the aircraft is:
 *a. 50 USG
 b. 48 USG
 c. 53 USG
 d. None of the above
+[explanation-image: fuelquantity.png]
 
 41. Total Usable Fuel of the Aircraft is:
 *a. 48 USG
 b. 50 USG
 c. 53 USG
 d. None of the Above
+[explanation-image: fuelquantity.png]
 
 42. Total Unusable fuel is:
 *a. 2 USG
 b. 1 USG
 c. 1.5 USG
 d. 4 USG (2 USG per tank)
+[explanation-image: fuelquantity.png]
 
 43. Approved Gearbox Oil are:
 a. Centurion Gearbox Oil N1
 b. Shell Spirax S6 GXME 75W-80
 c. Shell Spirax EP 75W-90
 *d. All of the Above
+[explanation-image: gearboxoil.png]
 
 44. If the propeller speed control fails, Climbs are performed at:
 *a. 65 KIAS & 100% Load
 b. Vy & 100% load
 c. 67 KIAS & 100% Load
 d. 65 KIAS & 85% Load
+[explanation-image: prop.png]
 
 45. During Engine Failure after take-off Airspeed with flaps retracted should be:
 *a. 73 KIAS
 b. 65 KIAS
 c. 68 KIAS
 d. 70 KIAS
+[explanation-image: fail.png]
 
 46. In an Engine failure, the propeller will continue to turn as long as the airspeed is above:
 *a. 65 KIAS
 b. 73 KIAS
 c. 60 KIAS
 d. 68 KIAS
+[explanation-image: fail.png]
 
 47. In case of a dead battery, the Aircraft can be started using external Power Source:
 *a. False
 b. True
 c. Only Under Certain Conditions
 d. Both b & c
+[explanation-image: start.png]
 
 48. Shut down the engine immediately if the oil pressure of 1 bar is not indicated within:
 *a. 3 seconds
 b. 2 seconds
 c. 30 seconds in Summer and 60 seconds in winter
 d. 60 seconds
+[explanation-image: shut.png]
 
 49. Lift off speed of the Piper Archer at 2550lbs(1157kg) is:
 *a. 55 KIAS
 b. 53 KIAS
 c. 54 KIAS
 d. 60 KIAS
+[explanation-image: liftoff.png]
 
 50. After Takeoff, speed at 15 m (50 ft) at 2550lbs(1157kg) is:
 *a. 60 KIAS
 b. 50 KIAS
 c. 57 KIAS
 d. 55 KIAS
+[explanation-image: liftoff.png]
 
 51. Vy at 2550 lbs.(1157kg) is:
 *a. 76 KIAS
 b. 70 KIAS
 c. 67 KIAS
 d. 65 KIAS
+[explanation-image: vy.png]
 
 52. Best Glide Speed is:
-*a. 78 KIAS
+*a. 78 KIAS 
 b. 75 KIAS
 c. 65 KIAS
 d. None of the Above
+[explanation-image: glide.png]
 
 53. Main battery voltage is:
 *a. 24V
@@ -825,6 +840,7 @@ d. Elliptical
 b. 6.00 X 6, six ply rating
 c. 8.00 X 6, four ply rating
 d. 8.00 X 6, six ply rating
+[explanation-image: ply.png]
 
 131. Type of Landing Gear:
 *a. Tricycle type fixed landing gear
@@ -837,6 +853,7 @@ d. Tailwheel Retractable Landing gear
 b. Nitrogen-Oil Type
 c. Water Type
 d. None of the above
+[explanation-image: struts.png]
 
 133. Nose Gear Steering:
 *a. 30 deg and Later Aircraft 20 deg
@@ -855,32 +872,38 @@ a. Decrease 10% for each 9 kts Headwind
 b. Decrease 9% for each 10 kts headwind
 c. Increase 10% for each 2 kts tailwind
 *d. Both A and C
+[explanation-image: wind.png]
 
 136. For operation on dry, grass runway, increase distances by:
 *a. 15% of the ground roll figure
 b. 10% of the ground roll figure
 c. 5% of the ground roll figure
 d. None of the Above
+[explanation-image: dry.png]
 
 137. Economic cruise on the Piper Archer is:
 *a. 70% load
 b. 75% Load
 c. 90% load
 d. 80% Load
+[explanation-image: economic.png]
 
 138. Increase airspeed and range by _____________ above ISA:
 *a. 1% per 10 deg C
 b. 10% per 10 deg C
 c. 5% per 10 deg C
 d. None of the above
+[explanation-image: isa.png]
 
 139. How much is the compulsory fuel reserve to be maintained?
 *a. 45 min
 b. 30 min
 c. 60 min
 d. 15 min
+[explanation-image: reserve.png]
 
 140. Alternator Excitation Battery is used to ensure that the Alternator will continue to function even if the main battery fails:
 *a. TRUE
 b. FALSE
+[explanation-image: alternator.png]
 `);
