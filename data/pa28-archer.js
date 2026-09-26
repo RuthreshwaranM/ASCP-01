@@ -119,9 +119,9 @@ d. 6.5 bar (94 psi)
 [explanation-image: oilpx.png]
 
 16. Maximum Oil Pressure (cold start < 20 sec):
-*a. 2.3 bar (33.4 psi)
+a. 2.3 bar (33.4 psi)
 b. 1.2 bar (14.5 psi)
-c. 1 bar
+*c. 6.5 bar (94 psi)
 d. 6 bar (94 psi)
 [explanation-image: oilpx.png]
 
