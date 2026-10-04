@@ -18,12 +18,15 @@ window.SITE = {
      To REMOVE a section: set show:false  (or delete the whole block).
      To ADD one: copy a block, give it a new href + page file.
      Order here = order on the home page and in the nav.          */
-  sections: [
+   sections: [
     { id:"bank",  show:true, label:"Question Bank", href:"bank.html",
       icon:"✈", blurb:"PA-28 Archer technical specific MCQs. Practice mode or timed test." },
 
     { id:"notes", show:true, label:"Notes", href:"notes.html",
       icon:"📘", blurb:"Ground school notes, checklists and quick-reference sheets." },
+
+    { id:"games", show:true, label:"Games", href:"games.html",
+      icon:"🎮", blurb:"Take a break. Play Akasa Sky Run and Akasa Air Race, and top the leaderboard." },
 
     { id:"about", show:true, label:"About Us", href:"about.html",
       icon:"👥", blurb:"Who we are — Batch 01, our training and our story." },
