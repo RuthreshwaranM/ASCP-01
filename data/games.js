@@ -22,5 +22,12 @@ window.GAMES = [
     url:   "https://ascp-race.vercel.app/",
     icon:  "images/games/air-race.png",
     emoji: "🏁"
+  },
+  {
+    name:  "Akasa Runner",
+    blurb: "Jump over the Pipers, collect coins (+10 each). Space / Tap / ↑ to jump. Don't jump into high-flying Pipers!",
+    url:   "https://ascp-runner.vercel.app/",
+    icon:  "images/games/air-race.png",
+    emoji: "💥"
   }
 ];
